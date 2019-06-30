@@ -1,4 +1,4 @@
-import { select } from "d3";
+import { select, easeCubicOut } from "d3";
 import textDimensions from "./text-dimensions";
 import { fontProperties, blockProperties } from "./constants";
 
@@ -8,7 +8,14 @@ export function drawCommands(svg, messages) {
     .data(commandsData(messages))
     .enter()
     .append("g")
+    .attr("transform", d => `translate(0,${d.offsetY + 30})`)
+    .attr("opacity", 0.0)
+    .transition()
+    .duration(500)
+    .ease(easeCubicOut)
+    .delay((d, i) => i * 100)
     .attr("transform", d => `translate(0,${d.offsetY})`)
+    .attr("opacity", 1.0)
     .each(function(d) {
       drawCommand(select(this), d.message);
     });

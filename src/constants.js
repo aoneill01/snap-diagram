@@ -8,3 +8,7 @@ export let fontProperties = {
     left: 10
   }
 };
+
+export let blockProperties = {
+  borderRadius: 5
+};

@@ -1,5 +1,7 @@
 import { select } from "d3";
-import { drawCommands, commandsDimensions } from "./blocks";
+import { drawCBlock, cBlockDimensions } from "./blocks";
+
+const message = "This is a test";
 
 const messages = [
   "This is the first",
@@ -10,11 +12,11 @@ const messages = [
   "This is the last"
 ];
 
-const { width, height } = commandsDimensions(messages);
+const { width, height } = cBlockDimensions(message, messages);
 
 const svg = select("body")
   .append("svg")
   .attr("width", width)
   .attr("height", height + 35);
 
-drawCommands(svg, messages);
+drawCBlock(svg, message, messages);

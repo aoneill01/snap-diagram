@@ -10,5 +10,6 @@ export let fontProperties = {
 };
 
 export let blockProperties = {
-  borderRadius: 5
+  borderRadius: 8,
+  offset: 2
 };

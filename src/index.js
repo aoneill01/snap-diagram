@@ -1,22 +1,31 @@
 import { select } from "d3";
-import { drawCBlock, cBlockDimensions } from "./blocks";
-
-const message = "This is a test";
+import { CBlock, BlockSequence, Text, CommandBlock } from "./blocks";
 
 const messages = [
   "This is the first",
   "This is the second",
-  "This is the third",
-  "x",
-  "This is the next-to-last",
-  "This is the last"
+  "This is the third"
 ];
 
-const { width, height } = cBlockDimensions(message, messages);
+const block = new BlockSequence([
+  new CommandBlock(new Text("Beginning")),
+  new CBlock(
+    new Text("Outer"),
+    new BlockSequence([
+      ...messages.map(m => new CommandBlock(new Text(m))),
+      new CBlock(
+        new Text("Inner"),
+        new BlockSequence([...messages.map(m => new CommandBlock(new Text(m)))])
+      ),
+      new CommandBlock(new Text("This is another"))
+    ])
+  ),
+  new CommandBlock(new Text("Ending"))
+]);
 
 const svg = select("body")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height + 35);
+  .attr("width", block.width)
+  .attr("height", block.height + 35);
 
-drawCBlock(svg, message, messages);
+block.draw(svg);

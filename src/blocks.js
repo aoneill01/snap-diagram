@@ -51,6 +51,10 @@ export class CommandBlock {
     return Math.max(this.text.height, minHeight);
   }
 
+  get count() {
+    return 1;
+  }
+
   get path() {
     return `M 0 ${blockProperties.borderRadius}
             A ${blockProperties.borderRadius} ${
@@ -106,6 +110,10 @@ export class CBlock {
       2 * blockProperties.offset +
       20
     );
+  }
+
+  get count() {
+    return this.blockSequence.count;
   }
 
   get path() {
@@ -169,7 +177,7 @@ export class CBlock {
             Z`;
   }
 
-  draw(svg) {
+  draw(svg, delay = 0) {
     svg
       .append("path")
       .attr("d", this.path)
@@ -184,7 +192,7 @@ export class CBlock {
         d => `translate(10,${this.text.height + blockProperties.offset})`
       );
 
-    this.blockSequence.draw(g);
+    this.blockSequence.draw(g, delay);
   }
 }
 
@@ -204,7 +212,11 @@ export class BlockSequence {
     );
   }
 
-  draw(svg) {
+  get count() {
+    return this.blocks.reduce((total, b) => total + b.block.count, 0);
+  }
+
+  draw(svg, delay = 0) {
     svg
       .selectAll("g")
       .data(this.blocks)
@@ -215,11 +227,11 @@ export class BlockSequence {
       .transition()
       .duration(500)
       .ease(easeCubicOut)
-      .delay((d, i) => i * 100)
+      .delay(d => (delay + d.delay) * 100)
       .attr("transform", d => `translate(0,${d.offsetY})`)
       .attr("opacity", 1.0)
       .each(function(d) {
-        d.block.draw(select(this));
+        d.block.draw(select(this), delay + d.delay);
       });
   }
 
@@ -232,7 +244,12 @@ export class BlockSequence {
         offsetY: result.reduce(
           (acc, d) => acc + d.block.height + blockProperties.offset,
           0
-        )
+        ),
+        delay:
+          result.length > 0
+            ? result[result.length - 1].delay +
+              result[result.length - 1].block.count
+            : 0
       });
     }
 
